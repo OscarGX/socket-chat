@@ -1,4 +1,4 @@
-var socket = io();
+const socket = io();
 const queryParams = new URLSearchParams(window.location.search);
 
 if (!queryParams.has('name') || !queryParams.has('room')) {
@@ -14,7 +14,7 @@ const user = {
 socket.on('connect', () => {
     console.log('Conectado al servidor');
     socket.emit('joinChat', user, (usersData) => {
-        console.log(usersData);
+        renderUsers(usersData);
     });
 });
 
@@ -24,11 +24,12 @@ socket.on('disconnect', () => {
 });
 
 socket.on('message', (msg) => {
-    console.log(msg);
+    renderMessage(msg, false);
+    scrollBottom();
 });
 
 socket.on('personsList', (list) => {
-    console.log(list);
+    renderUsers(list);
 });
 
 socket.on('privateMessage', (data) => {

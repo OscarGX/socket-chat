@@ -17,11 +17,14 @@ io.on('connection', (client) => {
         users.addPerson(client.id, user.name, user.room)
         callback(users.getPersonByRoom(user.room));
         client.broadcast.to(user.room).emit('personsList', users.getPersonByRoom(user.room));
+        client.broadcast.to(user.room).emit('message', createMessage('Admin', `${user.name} join the chat.`));
     });
 
-    client.on('message', (msg) => {
+    client.on('message', (msg, callback) => {
         const user = users.getPerson(client.id);
-        client.broadcast.to(user.room).emit('message', createMessage(user.name, msg.msg));
+        const msgComputed = createMessage(user.name, msg.msg);
+        client.broadcast.to(user.room).emit('message', msgComputed);
+        callback(msgComputed);
     });
 
     client.on('disconnect', () => {
